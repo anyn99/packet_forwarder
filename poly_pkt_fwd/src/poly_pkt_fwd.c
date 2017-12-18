@@ -1927,9 +1927,11 @@ void thread_up(void) {
 			meas_nb_rx_rcv += 1;
 			switch(p->status) {
 				case STAT_CRC_OK:
-				  // Green led
-					led_packet_cnt=FETCH_SLEEP_MS*10;
-					bcm2835_gpio_write(led_packet, HIGH);
+					if (led_packet != NOT_A_PIN) {
+						// Green led
+						led_packet_cnt=FETCH_SLEEP_MS*10;
+						bcm2835_gpio_write(led_packet, HIGH);
+					}
 					meas_nb_rx_ok += 1;
 					if (!fwd_valid_pkt) {
 						pthread_mutex_unlock(&mx_meas_up);
@@ -1937,9 +1939,11 @@ void thread_up(void) {
 					}
 					break;
 				case STAT_CRC_BAD:
-				  // Red led
-					led_error_cnt=FETCH_SLEEP_MS*10;
-					bcm2835_gpio_write(led_error, HIGH);
+					if (led_error != NOT_A_PIN) {
+						// Red led
+						led_error_cnt=FETCH_SLEEP_MS*10;
+						bcm2835_gpio_write(led_error, HIGH);
+					}
 					meas_nb_rx_bad += 1;
 					if (!fwd_error_pkt) {
 						pthread_mutex_unlock(&mx_meas_up);
@@ -1947,11 +1951,13 @@ void thread_up(void) {
 					}
 					break;
 				case STAT_NO_CRC:
-				  // Green and Red led
-					led_packet_cnt=FETCH_SLEEP_MS*10;
-					led_error_cnt=FETCH_SLEEP_MS*10; 
-					bcm2835_gpio_write(led_packet, HIGH);
-					bcm2835_gpio_write(led_error, HIGH);
+					if (led_packet != NOT_A_PIN && led_error != NOT_A_PIN) {
+						// Green and Red led
+						led_packet_cnt=FETCH_SLEEP_MS*10;
+						led_error_cnt=FETCH_SLEEP_MS*10; 
+						bcm2835_gpio_write(led_packet, HIGH);
+						bcm2835_gpio_write(led_error, HIGH);
+					}
 					meas_nb_rx_nocrc += 1;
 					if (!fwd_nocrc_pkt) {
 						pthread_mutex_unlock(&mx_meas_up);
@@ -1959,9 +1965,11 @@ void thread_up(void) {
 					}
 					break;
 				default:
-				  // Red led
-					led_error_cnt=FETCH_SLEEP_MS*10; 
-					bcm2835_gpio_write(led_error, HIGH);
+					if (led_error != NOT_A_PIN) {
+						// Red led
+						led_error_cnt=FETCH_SLEEP_MS*10; 
+						bcm2835_gpio_write(led_error, HIGH);
+					}
 					MSG("WARNING: [up] received packet with unknown status %u (size %u, modulation %u, BW %u, DR %u, RSSI %.1f)\n", p->status, p->size, p->modulation, p->bandwidth, p->datarate, p->rssi);
 					pthread_mutex_unlock(&mx_meas_up);
 					continue; /* skip that packet */
