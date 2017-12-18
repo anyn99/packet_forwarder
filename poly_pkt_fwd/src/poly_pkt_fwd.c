@@ -1951,11 +1951,13 @@ void thread_up(void) {
 					}
 					break;
 				case STAT_NO_CRC:
-					if (led_packet != NOT_A_PIN && led_error != NOT_A_PIN) {
-						// Green and Red led
+					// Green and Red led
+					if (led_packet != NOT_A_PIN) {
 						led_packet_cnt=FETCH_SLEEP_MS*10;
-						led_error_cnt=FETCH_SLEEP_MS*10; 
 						bcm2835_gpio_write(led_packet, HIGH);
+					}
+					if (led_error != NOT_A_PIN) {
+						led_error_cnt=FETCH_SLEEP_MS*10;
 						bcm2835_gpio_write(led_error, HIGH);
 					}
 					meas_nb_rx_nocrc += 1;
